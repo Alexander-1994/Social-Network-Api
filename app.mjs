@@ -1,21 +1,21 @@
-const createError = require("http-errors");
-const express = require("express");
-const path = require("path");
-const fs = require("fs");
-const cookieParser = require("cookie-parser");
-const logger = require("morgan");
+import express, { json, urlencoded, static as fileStatic } from "express";
+import fs from "fs";
+import logger from "morgan";
+import cookieParser from "cookie-parser";
+import createError from "http-errors";
+
+import router from "./routes/index.mjs";
 
 const app = express();
-
 app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(json());
+app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.set("view engine", "jade");
-/* раздавать статику из директории uploads */
-app.use("./uploads", express.static("uploads"));
+// Раздавать статику из директории uploads
+app.use("./uploads", fileStatic("uploads"));
 
-app.use("/api", require("./routes"));
+app.use("/api", router);
 
 if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
@@ -37,4 +37,4 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-module.exports = app;
+export default app;

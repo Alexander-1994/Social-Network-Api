@@ -1,14 +1,3 @@
-# Social-network
-### Данный репозиторий - это fullstack-приложение "Социальная сеть". 
-### Используемый stack: 
-```
--React
--TypeScript
--Redux Toolkit
--RTK Query
--React Hook Form
--Node.js Express
--Docker
--Docker Compose
--Next UI
-```
+# Social-Network-Api
+
+### Данный репозиторий - это api-сервер, написанный на Express для fullstack-приложения "Социальная сеть".
