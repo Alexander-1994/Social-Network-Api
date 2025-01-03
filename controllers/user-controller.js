@@ -1,10 +1,14 @@
 import path from 'path';
 import fs from 'fs';
 import bcryptjs from 'bcryptjs';
-import { toPng } from 'jdenticon';
+import * as jdenticon from 'jdenticon';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
 import { __dirname, ERRORS } from '../constants/index.js';
 import { prisma } from '../prisma/prisma-client.js';
+
+dotenv.config();
 
 export const UserController = {
   register: async (req, res) => {
@@ -23,7 +27,7 @@ export const UserController = {
       }
 
       const hashedPassword = await bcryptjs.hash(password, 10);
-      const png = toPng(name, 200);
+      const png = jdenticon.toPng(name, 200);
       const avatarName = `${name}_${Date.now()}.png`;
       const avatarPath = path.join(__dirname, '../uploads', avatarName);
 
@@ -45,7 +49,34 @@ export const UserController = {
     }
   },
   login: async (req, res) => {
-    res.send('login');
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: ERRORS.INVALID_REQUEST_BODY });
+    }
+
+    try {
+      const user = await prisma.user.findUnique({ where: { email } });
+
+      if (!user) {
+        return res.status(400).json({ error: ERRORS.INCORRECT_LOGIN_OR_PASSWORD });
+      }
+
+      /* Проверяем, что полученный password соответствует password пользователя из бд */
+      const isValid = await bcryptjs.compare(password, user.password);
+
+      if (!isValid) {
+        return res.status(400).json({ error: ERRORS.INCORRECT_LOGIN_OR_PASSWORD });
+      }
+
+      /* Т.к. полученные данные верны, создаём токен */
+      const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY);
+
+      res.json({ token });
+    } catch (error) {
+      console.error('Error in login', error);
+      res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
+    }
   },
   getUserById: async (req, res) => {
     res.send('getUserById');
