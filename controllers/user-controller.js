@@ -1,10 +1,10 @@
-import path from "path";
-import fs from "fs";
-import bcryptjs from "bcryptjs";
-import { toPng } from "jdenticon";
+import path from 'path';
+import fs from 'fs';
+import bcryptjs from 'bcryptjs';
+import { toPng } from 'jdenticon';
 
-import { __dirname, ERRORS } from "../constants/index.js";
-import { prisma } from "../prisma/prisma-client.js";
+import { __dirname, ERRORS } from '../constants/index.js';
+import { prisma } from '../prisma/prisma-client.js';
 
 export const UserController = {
   register: async (req, res) => {
@@ -25,7 +25,7 @@ export const UserController = {
       const hashedPassword = await bcryptjs.hash(password, 10);
       const png = toPng(name, 200);
       const avatarName = `${name}_${Date.now()}.png`;
-      const avatarPath = path.join(__dirname, "../uploads", avatarName);
+      const avatarPath = path.join(__dirname, '../uploads', avatarName);
 
       fs.writeFileSync(avatarPath, png);
 
@@ -40,20 +40,20 @@ export const UserController = {
 
       res.json(user);
     } catch (error) {
-      console.error("Error in register", error);
+      console.error('Error in register', error);
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
     }
   },
   login: async (req, res) => {
-    res.send("login");
+    res.send('login');
   },
   getUserById: async (req, res) => {
-    res.send("getUserById");
+    res.send('getUserById');
   },
   updateUser: async (req, res) => {
-    res.send("updateUser");
+    res.send('updateUser');
   },
   current: async (req, res) => {
-    res.send("current");
+    res.send('current');
   },
 };
