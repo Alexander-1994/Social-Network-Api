@@ -4,9 +4,10 @@ import logger from "morgan";
 import cookieParser from "cookie-parser";
 import createError from "http-errors";
 
-import router from "./routes/index.mjs";
+import router from "./routes/router.js";
 
 const app = express();
+
 app.use(logger("dev"));
 app.use(json());
 app.use(urlencoded({ extended: false }));
