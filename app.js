@@ -4,9 +4,9 @@ import logger from "morgan";
 import cookieParser from "cookie-parser";
 import createError from "http-errors";
 
-import router from "./routes/router.js";
+import { router } from "./routes/router.js";
 
-const app = express();
+export const app = express();
 
 app.use(logger("dev"));
 app.use(json());
@@ -37,5 +37,3 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
-
-export default app;

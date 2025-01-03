@@ -3,7 +3,7 @@ import multer, { diskStorage } from "multer";
 
 import { UserController } from "../controllers/user-controller.js";
 
-const router = Router();
+export const router = Router();
 
 // Показываем, где хранить файлы
 const storage = diskStorage({
@@ -21,5 +21,3 @@ router.post("/login", UserController.login);
 router.get("/current", UserController.current);
 router.get("/users/:id", UserController.getUserById);
 router.put("/users/:id", UserController.updateUser);
-
-export default router;
