@@ -18,8 +18,6 @@ export const authenticateToken = (req, res, next) => {
       return res.status(403).json({ error: ERRORS.INVALID_TOKEN });
     }
 
-    console.log(user);
-
     req.user = user;
     next();
   });

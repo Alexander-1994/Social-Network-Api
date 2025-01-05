@@ -79,7 +79,31 @@ export const UserController = {
     }
   },
   getUserById: async (req, res) => {
-    res.send('getUserById');
+    const { id } = req.params;
+    const { userId } = req.user;
+
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id },
+        include: {
+          followers: true,
+          following: true,
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({ error: ERRORS.USER_NOT_FIND });
+      }
+
+      const isFollowing = !!(await prisma.follows.findFirst({
+        where: { AND: [{ followerId: userId }, { followingId: id }] },
+      }));
+
+      res.json({ ...user, isFollowing });
+    } catch (error) {
+      console.error('Error getting user by ID', error);
+      res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
+    }
   },
   updateUser: async (req, res) => {
     res.send('updateUser');
