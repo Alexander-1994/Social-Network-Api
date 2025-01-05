@@ -98,13 +98,13 @@ export const PostController = {
         return res.status(403).json({ error: ERRORS.NOT_ENOUGH_RIGHTS });
       }
 
-      const transaction = await prisma.$transaction([
+      await prisma.$transaction([
         prisma.comment.deleteMany({ where: { postId: id } }),
         prisma.like.deleteMany({ where: { postId: id } }),
         prisma.post.delete({ where: { id } }),
       ]);
 
-      res.json(transaction);
+      res.json({ success: true });
     } catch (error) {
       console.error('Error deleting post by ID', error);
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });

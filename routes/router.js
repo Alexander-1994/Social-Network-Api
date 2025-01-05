@@ -3,6 +3,7 @@ import multer, { diskStorage } from 'multer';
 
 import { UserController } from '../controllers/user-controller.js';
 import { PostController } from '../controllers/post-controller.js';
+import { CommentController } from '../controllers/comment-controller.js';
 
 import { PATHS } from '../constants/paths.js';
 import { authenticateToken } from '../middlewares/auth.js';
@@ -30,3 +31,6 @@ router.post(PATHS.POST.POSTS, authenticateToken, PostController.createPost);
 router.get(PATHS.POST.POSTS, authenticateToken, PostController.getAllPosts);
 router.get(PATHS.POST.POST_BY_ID, authenticateToken, PostController.getPostById);
 router.delete(PATHS.POST.POST_BY_ID, authenticateToken, PostController.deletePostById);
+
+router.post(PATHS.COMMENT.COMMENTS, authenticateToken, CommentController.createComment);
+router.delete(PATHS.COMMENT.COMMENT_BY_ID, authenticateToken, CommentController.deleteCommentById);

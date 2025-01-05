@@ -6,6 +6,7 @@ export const ERRORS = {
   INCORRECT_LOGIN_OR_PASSWORD: 'Incorrect login or password',
   USER_NOT_FOUND: 'User not found',
   POST_NOT_FOUND: 'Post not found',
+  COMMENT_NOT_FOUND: 'Comment not found',
   NOT_ENOUGH_RIGHTS: 'Not enough rights',
   EMAIL_ALREADY_IN_USE: 'Email already in use',
   INTERVAL_SERVER_ERROR: 'Internal server error',
