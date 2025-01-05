@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-import { ERRORS } from '../constants/index.js';
+import { ERRORS } from '../constants/errors.js';
 
 /** Мидлвара для проверки авторицации пользователя */
 export const authenticateToken = (req, res, next) => {
@@ -10,7 +10,7 @@ export const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ error: ERRORS.USER_IS_NOT_AUTHORIZED });
+    return res.status(401).json({ error: ERRORS.USER_NOT_AUTHORIZED });
   }
 
   jwt.verify(token, process.env.SECRET_KEY, (err, user) => {

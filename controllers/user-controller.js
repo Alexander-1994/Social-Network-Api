@@ -5,7 +5,8 @@ import * as jdenticon from 'jdenticon';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-import { __dirname, ERRORS } from '../constants/index.js';
+import { DIRNAME } from '../constants/dirname.js';
+import { ERRORS } from '../constants/errors.js';
 import { prisma } from '../prisma/prisma-client.js';
 
 dotenv.config();
@@ -29,7 +30,7 @@ export const UserController = {
       const hashedPassword = await bcryptjs.hash(password, 10);
       const png = jdenticon.toPng(name, 200);
       const avatarName = `${name}_${Date.now()}.png`;
-      const avatarPath = path.join(__dirname, '../uploads', avatarName);
+      const avatarPath = path.join(DIRNAME, '../uploads', avatarName);
 
       fs.writeFileSync(avatarPath, png);
 
@@ -92,7 +93,7 @@ export const UserController = {
       });
 
       if (!user) {
-        return res.status(404).json({ error: ERRORS.USER_NOT_FIND });
+        return res.status(404).json({ error: ERRORS.USER_NOT_FOUND });
       }
 
       const isFollowing = !!(await prisma.follows.findFirst({
@@ -124,7 +125,7 @@ export const UserController = {
         const existingUser = await prisma.user.findFirst({ where: { email } });
 
         if (existingUser && existingUser.id !== id) {
-          return res.status(400).json({ error: ERRORS.EMAIL_IS_ALREADY_IN_USE });
+          return res.status(400).json({ error: ERRORS.EMAIL_ALREADY_IN_USE });
         }
       }
 
@@ -140,6 +141,31 @@ export const UserController = {
     }
   },
   current: async (req, res) => {
-    res.send('current');
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: req.user.userId },
+        include: {
+          followers: {
+            include: {
+              follower: true,
+            },
+          },
+          following: {
+            include: {
+              following: true,
+            },
+          },
+        },
+      });
+
+      if (!user) {
+        return res.status(400).json({ error: ERRORS.USER_NOT_FOUND });
+      }
+
+      res.json(user);
+    } catch (error) {
+      console.error('Error in current', error);
+      res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
+    }
   },
 };
