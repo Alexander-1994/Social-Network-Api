@@ -84,6 +84,30 @@ export const PostController = {
     }
   },
   deletePostById: async (req, res) => {
-    res.send('deletePostById');
+    const { id } = req.params;
+    const { userId } = req.user;
+
+    try {
+      const post = await prisma.post.findUnique({ where: { id } });
+
+      if (!post) {
+        return res.status(404).json({ error: ERRORS.POST_NOT_FOUND });
+      }
+
+      if (post.authorId !== userId) {
+        return res.status(403).json({ error: ERRORS.NOT_ENOUGH_RIGHTS });
+      }
+
+      const transaction = await prisma.$transaction([
+        prisma.comment.deleteMany({ where: { postId: id } }),
+        prisma.like.deleteMany({ where: { postId: id } }),
+        prisma.post.delete({ where: { id } }),
+      ]);
+
+      res.json(transaction);
+    } catch (error) {
+      console.error('Error deleting post by ID', error);
+      res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
+    }
   },
 };
