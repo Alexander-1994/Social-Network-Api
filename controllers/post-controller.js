@@ -25,7 +25,30 @@ export const PostController = {
     }
   },
   getAllPosts: async (req, res) => {
-    res.send('getAllPosts');
+    const { userId } = req.user;
+
+    try {
+      const posts = await prisma.post.findMany({
+        include: {
+          likes: true,
+          author: true,
+          comments: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      const postWithLikeInfo = posts.map((post) => ({
+        ...post,
+        likedByUser: post.likes.some((like) => like.userId === userId),
+      }));
+
+      res.json(postWithLikeInfo);
+    } catch (error) {
+      console.error('Error getting all posts', error);
+      res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
+    }
   },
   getPostById: async (req, res) => {
     res.send('getPostById');
