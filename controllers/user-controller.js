@@ -105,8 +105,39 @@ export const UserController = {
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
     }
   },
-  updateUser: async (req, res) => {
-    res.send('updateUser');
+  updateUserById: async (req, res) => {
+    const { id } = req.params;
+    const { email, name, dateOfBirth, bio, location } = req.body;
+
+    let filePath;
+
+    if (req.file?.path) {
+      filePath = req.file.path;
+    }
+
+    if (id !== req.user.userId) {
+      return res.status(403).json({ error: ERRORS.NOT_ENOUGH_RIGHTS });
+    }
+
+    try {
+      if (email) {
+        const existingUser = await prisma.user.findFirst({ where: { email } });
+
+        if (existingUser && existingUser.id !== id) {
+          return res.status(400).json({ error: ERRORS.EMAIL_IS_ALREADY_IN_USE });
+        }
+      }
+
+      const user = await prisma.user.update({
+        where: { id },
+        data: { email, name, dateOfBirth, bio, location, avatarUrl: filePath ? `/${filePath}` : undefined },
+      });
+
+      res.json(user);
+    } catch (error) {
+      console.error('Error updating user by ID', error);
+      res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
+    }
   },
   current: async (req, res) => {
     res.send('current');
