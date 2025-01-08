@@ -7,7 +7,9 @@ export const ERRORS = {
   USER_NOT_FOUND: 'User not found',
   POST_NOT_FOUND: 'Post not found',
   COMMENT_NOT_FOUND: 'Comment not found',
+  LIKE_NOT_FOUND: 'Like not found',
   NOT_ENOUGH_RIGHTS: 'Not enough rights',
   EMAIL_ALREADY_IN_USE: 'Email already in use',
+  LIKE_ALREADY_EXISTS: 'Like already exists',
   INTERVAL_SERVER_ERROR: 'Internal server error',
 };

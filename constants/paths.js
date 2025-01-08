@@ -13,4 +13,8 @@ export const PATHS = {
     COMMENTS: '/comments',
     COMMENT_BY_ID: '/comments/:id',
   },
+  LIKE: {
+    LIKES: '/likes',
+    LIKE_BY_ID: '/likes/:id',
+  },
 };

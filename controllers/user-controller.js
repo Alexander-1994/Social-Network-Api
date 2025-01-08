@@ -28,9 +28,9 @@ export const UserController = {
       }
 
       const hashedPassword = await bcryptjs.hash(password, 10);
-      const png = jdenticon.toPng(name, 200);
+      const png = jdenticon.toPng(`${name}${Date.now()}`, 200);
       const avatarName = `${name}_${Date.now()}.png`;
-      const avatarPath = path.join(DIRNAME, '../uploads', avatarName);
+      const avatarPath = path.join(DIRNAME, '/../uploads', avatarName);
 
       fs.writeFileSync(avatarPath, png);
 
@@ -39,7 +39,7 @@ export const UserController = {
           email,
           password: hashedPassword,
           name,
-          avatarUrl: `/uploads/${avatarPath}`,
+          avatarUrl: `/uploads/${avatarName}`,
         },
       });
 
