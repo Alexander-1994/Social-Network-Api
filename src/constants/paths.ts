@@ -21,4 +21,4 @@ export const PATHS = {
     FOLLOW: '/follow',
     UNFOLLOW_BY_ID: '/unfollow/:id',
   },
-};
+} as const;

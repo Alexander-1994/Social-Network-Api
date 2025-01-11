@@ -1,36 +1,37 @@
+import type { Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
 import bcryptjs from 'bcryptjs';
-import * as jdenticon from 'jdenticon';
+import jdenticon from 'jdenticon';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-import { DIRNAME } from '../constants/dirname.js';
-import { ERRORS } from '../constants/errors.js';
-import { prisma } from '../prisma/prisma-client.js';
+import { prisma } from '../../prisma';
+import { ERRORS } from '../constants';
 
 dotenv.config();
 
 export const UserController = {
-  register: async (req, res) => {
+  register: async (req: Request, res: Response) => {
     const { email, password, name } = req.body;
 
     if (!email || !password || !name) {
-      return res.status(400).json({ error: ERRORS.INVALID_REQUEST_BODY });
+      res.status(400).json({ error: ERRORS.INVALID_REQUEST_BODY });
+      return;
     }
 
     try {
-      /* Проверяем наличие email в бд */
       const existingUser = await prisma.user.findUnique({ where: { email } });
 
       if (existingUser) {
-        return res.status(400).json({ error: ERRORS.USER_ALREADY_EXISTS });
+        res.status(400).json({ error: ERRORS.USER_ALREADY_EXISTS });
+        return;
       }
 
       const hashedPassword = await bcryptjs.hash(password, 10);
       const png = jdenticon.toPng(`${name}${Date.now()}`, 200);
       const avatarName = `${name}_${Date.now()}.png`;
-      const avatarPath = path.join(DIRNAME, '/../uploads', avatarName);
+      const avatarPath = path.join(__dirname, '/../../uploads', avatarName);
 
       fs.writeFileSync(avatarPath, png);
 
@@ -49,29 +50,32 @@ export const UserController = {
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
     }
   },
-  login: async (req, res) => {
+  login: async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ error: ERRORS.INVALID_REQUEST_BODY });
+      res.status(400).json({ error: ERRORS.INVALID_REQUEST_BODY });
+      return;
     }
 
     try {
       const user = await prisma.user.findUnique({ where: { email } });
 
       if (!user) {
-        return res.status(400).json({ error: ERRORS.INCORRECT_LOGIN_OR_PASSWORD });
+        res.status(400).json({ error: ERRORS.INCORRECT_LOGIN_OR_PASSWORD });
+        return;
       }
 
       /* Проверяем, что полученный password соответствует password пользователя из бд */
       const isValid = await bcryptjs.compare(password, user.password);
 
       if (!isValid) {
-        return res.status(400).json({ error: ERRORS.INCORRECT_LOGIN_OR_PASSWORD });
+        res.status(400).json({ error: ERRORS.INCORRECT_LOGIN_OR_PASSWORD });
+        return;
       }
 
       /* Т.к. полученные данные верны, создаём токен */
-      const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY);
+      const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY || '');
 
       res.json({ token });
     } catch (error) {
@@ -79,9 +83,9 @@ export const UserController = {
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
     }
   },
-  getUserById: async (req, res) => {
+  getUserById: async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { userId } = req.user;
+    const { userId = '' } = req.user ?? {};
 
     try {
       const user = await prisma.user.findUnique({
@@ -93,7 +97,8 @@ export const UserController = {
       });
 
       if (!user) {
-        return res.status(404).json({ error: ERRORS.USER_NOT_FOUND });
+        res.status(404).json({ error: ERRORS.USER_NOT_FOUND });
+        return;
       }
 
       const isFollowing = !!(await prisma.follows.findFirst({
@@ -106,9 +111,10 @@ export const UserController = {
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
     }
   },
-  updateUserById: async (req, res) => {
+  updateUserById: async (req: Request, res: Response) => {
     const { id } = req.params;
     const { email, name, dateOfBirth, bio, location } = req.body;
+    const { userId = '' } = req.user ?? {};
 
     let filePath;
 
@@ -116,8 +122,9 @@ export const UserController = {
       filePath = req.file.path;
     }
 
-    if (id !== req.user.userId) {
-      return res.status(403).json({ error: ERRORS.NOT_ENOUGH_RIGHTS });
+    if (id !== userId) {
+      res.status(403).json({ error: ERRORS.NOT_ENOUGH_RIGHTS });
+      return;
     }
 
     try {
@@ -125,7 +132,8 @@ export const UserController = {
         const existingUser = await prisma.user.findFirst({ where: { email } });
 
         if (existingUser && existingUser.id !== id) {
-          return res.status(400).json({ error: ERRORS.EMAIL_ALREADY_IN_USE });
+          res.status(400).json({ error: ERRORS.EMAIL_ALREADY_IN_USE });
+          return;
         }
       }
 
@@ -140,10 +148,12 @@ export const UserController = {
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
     }
   },
-  current: async (req, res) => {
+  current: async (req: Request, res: Response) => {
+    const { userId = '' } = req.user ?? {};
+
     try {
       const user = await prisma.user.findUnique({
-        where: { id: req.user.userId },
+        where: { id: userId },
         include: {
           followers: {
             include: {
@@ -159,7 +169,8 @@ export const UserController = {
       });
 
       if (!user) {
-        return res.status(400).json({ error: ERRORS.USER_NOT_FOUND });
+        res.status(400).json({ error: ERRORS.USER_NOT_FOUND });
+        return;
       }
 
       res.json(user);

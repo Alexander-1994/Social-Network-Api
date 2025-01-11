@@ -15,4 +15,4 @@ export const ERRORS = {
   SUBSCRIPTION_ALREADY_EXISTS: 'Subscription already exists',
   UNAVAILABLE_OPERATION: 'Unavailable operation',
   INTERVAL_SERVER_ERROR: 'Internal server error',
-};
+} as const;

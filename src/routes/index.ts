@@ -1,14 +1,9 @@
 import { Router } from 'express';
 import multer, { diskStorage } from 'multer';
 
-import { UserController } from '../controllers/user-controller.js';
-import { PostController } from '../controllers/post-controller.js';
-import { CommentController } from '../controllers/comment-controller.js';
-import { LikeController } from '../controllers/like-controller.js';
-import { FollowController } from '../controllers/follow-controller.js';
-
-import { PATHS } from '../constants/paths.js';
-import { authenticateToken } from '../middlewares/auth.js';
+import { UserController, PostController, CommentController, LikeController, FollowController } from '../controllers';
+import { PATHS } from '../constants';
+import { authenticateToken } from '../middlewares';
 
 export const router = Router();
 

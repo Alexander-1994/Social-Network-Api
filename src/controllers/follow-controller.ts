@@ -1,8 +1,10 @@
+import type { Request, Response } from 'express';
+
+import { prisma } from '../../prisma';
 import { ERRORS } from '../constants/errors.js';
-import { prisma } from '../prisma/prisma-client.js';
 
 export const FollowController = {
-  followUser: async (req, res) => {
+  followUser: async (req: Request, res: Response) => {
     const { followingId } = req.body;
     const { userId = '' } = req.user ?? {};
 
@@ -38,7 +40,7 @@ export const FollowController = {
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
     }
   },
-  unfollowUser: async (req, res) => {
+  unfollowUser: async (req: Request, res: Response) => {
     const { followingId } = req.params;
     const { userId = '' } = req.user ?? {};
 

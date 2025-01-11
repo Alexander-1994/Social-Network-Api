@@ -1,13 +1,16 @@
-import { ERRORS } from '../constants/errors.js';
-import { prisma } from '../prisma/prisma-client.js';
+import type { Request, Response } from 'express';
+
+import { prisma } from '../../prisma';
+import { ERRORS } from '../constants';
 
 export const CommentController = {
-  createComment: async (req, res) => {
+  createComment: async (req: Request, res: Response) => {
     const { postId, content } = req.body;
-    const { userId } = req.user;
+    const { userId = '' } = req.user ?? {};
 
     if (!postId || !content) {
-      return res.status(400).json({ error: ERRORS.INVALID_REQUEST_BODY });
+      res.status(400).json({ error: ERRORS.INVALID_REQUEST_BODY });
+      return;
     }
 
     try {
@@ -25,19 +28,21 @@ export const CommentController = {
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
     }
   },
-  deleteCommentById: async (req, res) => {
+  deleteCommentById: async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { userId } = req.user;
+    const { userId = '' } = req.user ?? {};
 
     try {
       const comment = await prisma.comment.findUnique({ where: { id } });
 
       if (!comment) {
-        return res.status(404).json({ error: ERRORS.COMMENT_NOT_FOUND });
+        res.status(404).json({ error: ERRORS.COMMENT_NOT_FOUND });
+        return;
       }
 
       if (comment.userId !== userId) {
-        return res.status(403).json({ error: ERRORS.NOT_ENOUGH_RIGHTS });
+        res.status(403).json({ error: ERRORS.NOT_ENOUGH_RIGHTS });
+        return;
       }
 
       await prisma.comment.delete({ where: { id } });

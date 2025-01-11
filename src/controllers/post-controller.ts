@@ -1,20 +1,23 @@
-import { ERRORS } from '../constants/errors.js';
-import { prisma } from '../prisma/prisma-client.js';
+import type { Request, Response } from 'express';
+
+import { prisma } from '../../prisma';
+import { ERRORS } from '../constants';
 
 export const PostController = {
-  createPost: async (req, res) => {
+  createPost: async (req: Request, res: Response) => {
     const { content } = req.body;
-    const authorId = req.user.userId;
+    const { userId = '' } = req.user ?? {};
 
     if (!content) {
-      return res.status(400).json({ error: ERRORS.INVALID_REQUEST_BODY });
+      res.status(400).json({ error: ERRORS.INVALID_REQUEST_BODY });
+      return;
     }
 
     try {
       const post = await prisma.post.create({
         data: {
           content,
-          authorId,
+          authorId: userId,
         },
       });
 
@@ -24,8 +27,8 @@ export const PostController = {
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
     }
   },
-  getAllPosts: async (req, res) => {
-    const { userId } = req.user;
+  getAllPosts: async (req: Request, res: Response) => {
+    const { userId = '' } = req.user ?? {};
 
     try {
       const posts = await prisma.post.findMany({
@@ -50,9 +53,9 @@ export const PostController = {
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
     }
   },
-  getPostById: async (req, res) => {
+  getPostById: async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { userId } = req.user;
+    const { userId = '' } = req.user ?? {};
 
     try {
       const post = await prisma.post.findUnique({
@@ -69,7 +72,8 @@ export const PostController = {
       });
 
       if (!post) {
-        return res.status(404).json({ error: ERRORS.POST_NOT_FOUND });
+        res.status(404).json({ error: ERRORS.POST_NOT_FOUND });
+        return;
       }
 
       const postWithLikeInfo = {
@@ -83,19 +87,21 @@ export const PostController = {
       res.status(500).json({ error: ERRORS.INTERVAL_SERVER_ERROR });
     }
   },
-  deletePostById: async (req, res) => {
+  deletePostById: async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { userId } = req.user;
+    const { userId = '' } = req.user ?? {};
 
     try {
       const post = await prisma.post.findUnique({ where: { id } });
 
       if (!post) {
-        return res.status(404).json({ error: ERRORS.POST_NOT_FOUND });
+        res.status(404).json({ error: ERRORS.POST_NOT_FOUND });
+        return;
       }
 
       if (post.authorId !== userId) {
-        return res.status(403).json({ error: ERRORS.NOT_ENOUGH_RIGHTS });
+        res.status(403).json({ error: ERRORS.NOT_ENOUGH_RIGHTS });
+        return;
       }
 
       await prisma.$transaction([
