@@ -5,6 +5,7 @@ import { UserController } from '../controllers/user-controller.js';
 import { PostController } from '../controllers/post-controller.js';
 import { CommentController } from '../controllers/comment-controller.js';
 import { LikeController } from '../controllers/like-controller.js';
+import { FollowController } from '../controllers/follow-controller.js';
 
 import { PATHS } from '../constants/paths.js';
 import { authenticateToken } from '../middlewares/auth.js';
@@ -38,3 +39,6 @@ router.delete(PATHS.COMMENT.COMMENT_BY_ID, authenticateToken, CommentController.
 
 router.post(PATHS.LIKE.LIKES, authenticateToken, LikeController.likePost);
 router.delete(PATHS.LIKE.LIKE_BY_ID, authenticateToken, LikeController.unlikePostById);
+
+router.post(PATHS.FOLLOW.FOLLOW, authenticateToken, FollowController.followUser);
+router.delete(PATHS.FOLLOW.UNFOLLOW_BY_ID, authenticateToken, FollowController.unfollowUser);

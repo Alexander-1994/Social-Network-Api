@@ -17,4 +17,8 @@ export const PATHS = {
     LIKES: '/likes',
     LIKE_BY_ID: '/likes/:id',
   },
+  FOLLOW: {
+    FOLLOW: '/follow',
+    UNFOLLOW_BY_ID: '/unfollow/:id',
+  },
 };

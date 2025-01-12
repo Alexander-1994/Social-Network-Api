@@ -8,8 +8,11 @@ export const ERRORS = {
   POST_NOT_FOUND: 'Post not found',
   COMMENT_NOT_FOUND: 'Comment not found',
   LIKE_NOT_FOUND: 'Like not found',
+  SUBSCRIPTION_NOT_FOUND: 'Subscription not found',
   NOT_ENOUGH_RIGHTS: 'Not enough rights',
   EMAIL_ALREADY_IN_USE: 'Email already in use',
   LIKE_ALREADY_EXISTS: 'Like already exists',
+  SUBSCRIPTION_ALREADY_EXISTS: 'Subscription already exists',
+  UNAVAILABLE_OPERATION: 'Unavailable operation',
   INTERVAL_SERVER_ERROR: 'Internal server error',
 };
