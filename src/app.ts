@@ -14,7 +14,7 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.set('view engine', 'jade');
 // Раздавать статику из директории uploads
-app.use('/../uploads', fileStatic('uploads'));
+app.use('/uploads', fileStatic('uploads'));
 app.use('/api', router);
 
 if (!fs.existsSync('uploads')) {
