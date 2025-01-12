@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 
 import { prisma } from '../../prisma';
-import { ERRORS } from '../constants/errors.js';
+import { ERRORS } from '../constants';
 
 export const FollowController = {
   followUser: async (req: Request, res: Response) => {

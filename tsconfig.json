@@ -6,11 +6,8 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "outDir": "./dist",
-    "baseUrl": "./"
+    "esModuleInterop": true
   },
-  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"],
   "files": ["types.d.ts"],
   "ts-node": { "compilerOptions": { "module": "CommonJS" } }
