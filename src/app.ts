@@ -3,11 +3,13 @@ import fs from 'fs';
 import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import createError from 'http-errors';
+import cors from 'cors';
 
 import { router } from './routes';
 
 export const app: Application = express();
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(json());
 app.use(urlencoded({ extended: false }));
