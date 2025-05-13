@@ -22,7 +22,7 @@ router.post(PATHS.USER.REGISTER, UserController.register);
 router.post(PATHS.USER.LOGIN, UserController.login);
 router.get(PATHS.USER.CURRENT, authenticateToken, UserController.current);
 router.get(PATHS.USER.USER_BY_ID, authenticateToken, UserController.getUserById);
-router.put(PATHS.USER.USER_BY_ID, authenticateToken, UserController.updateUserById);
+router.put(PATHS.USER.USER_BY_ID, authenticateToken, uploads.single('avatar'), UserController.updateUserById);
 
 router.post(PATHS.POST.POSTS, authenticateToken, PostController.createPost);
 router.get(PATHS.POST.POSTS, authenticateToken, PostController.getAllPosts);
