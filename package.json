@@ -1,6 +1,6 @@
 {
   "name": "social-network-api",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "scripts": {
     "start:dev": "concurrently \"npx prisma studio\" \"nodemon ./src/server.ts\"",
